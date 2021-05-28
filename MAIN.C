@@ -171,7 +171,7 @@ void DrawLoop(){
 
         char L1Held_Open = 0; // PCOpen modifier
         char L2Held_Close = 0; // PCClose modifier
-        char R1Held_Read = 0; // PCRead modifier
+        char R1Held_Create = 0; // PCCreate modifier
         char R2Held_Write = 0; // PCWrite modifier
 
         StartDraw();
@@ -180,7 +180,7 @@ void DrawLoop(){
 
         L1Held_Open = padVals & PADL1;
         L2Held_Close = padVals & PADL2;
-        R1Held_Read = padVals & PADR1;
+        R1Held_Create = padVals & PADR1;
         R2Held_Write = padVals & PADR2;
 
         FntPrint( "\n" );
@@ -263,14 +263,14 @@ void DrawLoop(){
                     if ( result == -1 ){
                         QuickMessage( "Error writing! Code: %x\n", result, 0 );
                     } else{                        
-                        QuickMessage( "Wrote %d byes!\n", result, 0 );
+                        QuickMessage( "Wrote %d bytes!\n", result, 0 );
                     }
 
                 }
                 
             }
 
-        } else if ( R1Held_Read ){
+        } else if ( R1Held_Create ){
             
             char didCreate = 0;
 
