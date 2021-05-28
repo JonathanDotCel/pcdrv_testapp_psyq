@@ -17,6 +17,7 @@ comport.txt
 #os stuff
 Desktop.ini
 .DS_Store
+Thumbs.db
 
 #working directories
 /junk/

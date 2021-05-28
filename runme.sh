@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 #example
-#alias nops="mono ~/NOTPSXSerial/nops.exe"
+alias nops="mono ~/NOTPSXSerial/nops.exe"
 
 nops /fast /debug
 

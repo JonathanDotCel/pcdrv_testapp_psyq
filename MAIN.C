@@ -8,6 +8,9 @@
 #include <libgs.h>
 #include <libetc.h>
 
+#include "timloader.h"
+#include "gpu.h"
+
 // the one we're interested in
 // the full source is kicking about somewhere in the psyq sdk folder
 #include <libsn.h>
@@ -154,7 +157,10 @@ void ShowStatus(){
 // Handles for each individual file
 int handle_bubblenuggets = -1;
 int handle_biosdump = -1;
-int handle_HELLOBMP = -1;
+int handle_HELLOTIM = -1;
+
+char didLoadLobster = 0;
+TIMData lobsterTimData;
 
 void DrawLoop(){
 
@@ -194,7 +200,7 @@ void DrawLoop(){
         FntPrint(" \n" );
         
         FntPrint( "Debug:\n\n" );
-        FntPrint( "   LastResponse= %x, Handles= %d,%d,%d, Pad 1= %x\n", lastOpsVal, handle_bubblenuggets, handle_biosdump, handle_HELLOBMP, padVals );
+        FntPrint( "   LastResponse= %x, Handles= %d,%d,%d, Pad 1= %x\n", lastOpsVal, handle_bubblenuggets, handle_biosdump, handle_HELLOTIM, padVals );
         FntPrint(" \n" );
 
         FntPrint( "Key Combos:\n\n" );
@@ -228,7 +234,7 @@ void DrawLoop(){
             FntPrint( "   Write - Break 0x106\n" );
             FntPrint( "   /\\: PCWrite(bubblenuggets.txt, 'HELLO WORLD!', 12 )\n" );
             FntPrint( "   []: PCWrite(biosdump, <bios at 0xBFC00000>, 512kb )\n"  );
-            FntPrint( "   X : PCWrite(HELLO.BMP, gibberish, 20  )\n"  );
+            FntPrint( "   X : PCWrite(bins/lobster.tim, gibberish, 20  )\n"  );
             
             if ( Released( PADRup ) ){
                 targetHandle = handle_bubblenuggets;
@@ -241,7 +247,7 @@ void DrawLoop(){
             }
 
             if ( Released( PADRdown ) ){
-                targetHandle = handle_HELLOBMP;
+                targetHandle = handle_HELLOTIM;
                 targetString = "RUMPLE, RUMPLE, RUMPLE CHUNKS!\n";  // shouldn't write - it's read only
             }
 
@@ -277,7 +283,7 @@ void DrawLoop(){
             FntPrint( "   Create - Break 0x102\n" );
             FntPrint( "   /\\: PCCreat(bubblenuggets.txt)\n" );
             FntPrint( "   []: PCCreat(biosdump)\n" );
-            FntPrint( "   X : PCCreat(HELLO.BMP)\n" );
+            FntPrint( "   X : PCCreat(bins/lobster.tim)\n" );
 
             if ( Released( PADRup ) ){
                 lastOpsVal = handle_bubblenuggets = PCcreat( "bubblenuggets.txt", 0 );
@@ -288,7 +294,7 @@ void DrawLoop(){
                 didCreate = 1;
             }        
             if ( Released( PADRdown ) ){
-                lastOpsVal = handle_HELLOBMP = PCcreat( "HELLO.BMP", 0);
+                lastOpsVal = handle_HELLOTIM = PCcreat( "bins/lobster.tim", 0);
                 didCreate = 1;
             }
 
@@ -307,7 +313,7 @@ void DrawLoop(){
             FntPrint( "   Close - Break 0x104\n" );
             FntPrint( "   /\\: PCClose(bubblenuggets.txt)\n" );
             FntPrint( "   []: PCClose(biosdump)\n" );
-            FntPrint( "   X : PCClose(HELLO.BMP)\n" );
+            FntPrint( "   X : PCClose(bins/lobster.tim)\n" );
 
             if ( Released( PADRup ) ){
                 lastOpsVal = PCclose( handle_bubblenuggets );
@@ -318,7 +324,7 @@ void DrawLoop(){
                 didClose = 1;
             }        
             if ( Released( PADRdown ) ){
-                lastOpsVal = PCclose( handle_HELLOBMP );
+                lastOpsVal = PCclose( handle_HELLOTIM );
                 didClose = 1;
             }
 
@@ -337,7 +343,7 @@ void DrawLoop(){
             FntPrint( "   Open - Break 0x103\n" );
             FntPrint( "   /\\: PCOpen(bubblenuggets.txt)\n" );
             FntPrint( "   []: PCOpen(biosdump)\n" );
-            FntPrint( "   X : PCOpen(HELLO.BMP)   (READONLY)\n" );
+            FntPrint( "   X : PCOpen(bins/lobster.tim)   (READONLY)\n" );
 
             if ( Released( PADRup ) ){
                 lastOpsVal = handle_bubblenuggets = PCopen( "bubblenuggets.txt", FILEMODE_READWRITE, 0);
@@ -348,7 +354,7 @@ void DrawLoop(){
                 didOpen = 1;
             }        
             if ( Released( PADRdown ) ){
-                lastOpsVal = handle_HELLOBMP = PCopen( "HELLO.BMP", FILEMODE_READONLY, 0);
+                lastOpsVal = handle_HELLOTIM = PCopen( "bins/lobster.tim", FILEMODE_READONLY, 0);
                 didOpen = 1;
             }
 
@@ -373,7 +379,7 @@ void DrawLoop(){
             FntPrint( "   Read - Break 0x105\n" );
             FntPrint( "   /\\: Read(bubblenuggets.txt, 0x%x, 100 )\n", BUFFER );
             FntPrint( "   []: Read(biosdump, 0x%x, 100 )\n", BUFFER );
-            FntPrint( "   X : Read(HELLO.BMP) 0x%x\n", BUFFER ); // empty/missing file (by default), expect zeros
+            FntPrint( "   X : Read(bins/lobster.tim) 0x%x\n", BUFFER ); // empty/missing file (by default), expect zeros
 
             if ( Released( PADRup ) ){
                 targetHandle = handle_bubblenuggets;                
@@ -384,7 +390,7 @@ void DrawLoop(){
             }
 
             if ( Released( PADRdown ) ){
-                targetHandle = handle_HELLOBMP;
+                targetHandle = handle_HELLOTIM;
             }
 
             if ( targetHandle == -2 ){
@@ -414,7 +420,16 @@ void DrawLoop(){
                         if ( lastOpsVal == -1 ){
                             QuickMessage( "Error reading the file!", 0, 0 );
                         } else {
-                            ShowFileContents( pBuffer, fileSize );
+                            if ( targetHandle == handle_HELLOTIM ){
+                                didLoadLobster = 1;
+
+                                // "Hello world and flappy credits has a good example
+                                // of this code with diagrams and stuff if you want to play
+                                // with sprites.
+                                UploadTim( pBuffer, &lobsterTimData, SCREEN_WIDTH + TEXPAGE_WIDTH, 1, SCREEN_WIDTH + TEXPAGE_WIDTH, 16 );
+                            } else {
+                                ShowFileContents( pBuffer, fileSize );
+                            }
                         }
 
                     }
@@ -429,7 +444,26 @@ void DrawLoop(){
         if ( Released( PADRright ) ){
             goto *(ulong*)0xBFC00000;
         }
+
         
+        // mad flickering from trying to mix nuggety things with psyq
+        // but it's just an example
+        if ( didLoadLobster ){
+
+            Sprite * s;
+            s->data = &lobsterTimData;
+
+            s->xPos = 20;
+            s->yPos = 20;
+
+            s->height = 40;
+            s->width = 40;
+
+            DrawSprite( s );
+            
+        }
+                
+
         EndDraw();
 		
 	}
