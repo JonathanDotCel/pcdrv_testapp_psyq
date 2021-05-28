@@ -1,0 +1,14 @@
+{
+  "env": {
+    "myDefaultIncludePath": ["${workspaceFolder}", "${workspaceFolder}/include"],    
+  },
+  "configurations": [
+    {
+      "name": "Mac",
+      "intelliSenseMode": "clang-x64",
+      "includePath": ["${myDefaultIncludePath}", "~/psyq/"],
+      
+    }
+  ],
+  "version": 4
+}

@@ -1,0 +1,53 @@
+
+#use .cmd for personal .bat files
+*.cmd
+
+#compiled
+*.o
+*.dep
+*.temp
+*.elf
+*.lnk
+*.obj
+*.cpe
+
+#nops last used port
+comport.txt
+
+#os stuff
+Desktop.ini
+.DS_Store
+
+#working directories
+/junk/
+/debug/
+/stuff/
+/release_tools/
+.vs/
+Debug/
+.vscode/
+
+#stuff and or things
+*.idb
+*.cpe
+*.map
+*.sym
+*.temp
+*.crunched
+
+stdout.txt
+stderr.txt
+
+#nops dumps
+dump*
+
+
+#dosbox stuff
+dosbox.conf
+dosbox.exe
+sdl.dll
+sdl_net.dll
+
+#test files
+testfile
+biosdump

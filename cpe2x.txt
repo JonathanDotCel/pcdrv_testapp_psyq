@@ -1,0 +1,16 @@
+Psx CPE2X - Win32 Version by Orion_ [2013]
+
+http://onorisoft.free.fr/
+
+
+This is a replacement for the cpe2x.com and cpe2exe.exe Psx tools.
+Both of these tools are 16bits and doesn't run on modern OS such as Windows 7 64bits.
+I found some old C source on web.archive.org, the source wasn't compiling so I corrected some things.
+And now you have a new cpe2x tool working on modern OS !
+
+This tool convert a cpe file from psxlinker to a PS-EXE file.
+It also roundup the exe size to 2048, and sign the header. (so you won't need to use exefixup)
+
+Usage: exactly as the original cpe2x: cpe2x file.cpe
+
+The original source have no author mentionned, maybe Nagra/Blackvision ?
