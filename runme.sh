@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-alias nops="mono /Users/jc/NOTPSXSerial/nops.exe"
+alias nops="mono ~/NOTPSXSerial/nops.exe"
 
 nops /fast /debug
 
