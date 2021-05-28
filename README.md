@@ -1,6 +1,8 @@
 # pcdrv_testapp_psyq
 Playstation1 'pcdrv' file server app using unirom + nops. (PSYQ version)
 
+For the nugget (non-psyq) version, see here: https://github.com/JonathanDotCel/pcdrv_testapp_nugget
+
 I'll keep this short as it's not meant to be an intro to psx programming or psqy in general.
 If you're after that sort of thing, come say hi on the psxdev discord, or see here:
 - http://psx.arthus.net/starting.html
